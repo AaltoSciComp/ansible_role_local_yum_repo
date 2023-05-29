@@ -21,7 +21,8 @@
         state=directory
 
   - name: Create/update the repomd
-    ansible.builtin.include_tasks: repomd.yml
+    ansible.builtin.include_tasks:
+        file:	"{{role_path}}/tasks/repomd.yml"
 
 
   - name: custom index.html

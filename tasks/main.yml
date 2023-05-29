@@ -1,0 +1,63 @@
+---
+# tasks file for ansible_role_local_yum_repo
+
+# Loosely based on - https://gist.github.com/cecil/31db124a058574d1ffbd
+#                  - https://www.ansiblepilot.com/articles/deploy-a-web-server-apache-httpd-on-redhat-like-systems-ansible-modules-yum-copy-service-firewalld/
+
+  - name: Install tools
+    ansible.builtin.dnf:
+        name:
+          - 'httpd'
+          - 'createrepo'
+          - 'rsync'
+#          - 'firewalld'
+          - 'python3-firewall'
+
+  - name: create folder for repository
+    ansible.builtin.file:
+        path="{{local_yum_repo_folder}}"
+        owner=apache
+        group=apache
+        state=directory
+
+  - name: Create a repomd (xml-based rpm metadata) repository from a set of rpms
+    ansible.builtin.command:
+        cmd: "createrepo '{{local_yum_repo_folder}}'"
+    tags: ['createrepo']
+
+  - name: custom index.html
+    ansible.builtin.copy:
+        dest: /var/www/html/index.html
+        content: |
+          Triton Internal Web-server  
+
+  - name: (re)start Apache
+    ansible.builtin.systemd:
+        state: restarted
+        daemon_reload: true
+        name: httpd
+        enabled: true
+
+#  - name: start firewalld
+#    ansible.builtin.systemd:
+#        state: started
+#        daemon_reload: true
+#        name: firewalld
+#        enabled: yes
+
+  - name: add to firewall httpd
+    ansible.posix.firewalld:
+        service: http
+        permanent: true
+        immediate: true
+        state: enabled
+    tags: notest
+
+  # Should be "firewall-cmd --reload"
+  - name: restart firewalld
+    ansible.builtin.systemd:
+        state: restarted
+        daemon_reload: true
+        name: firewalld
+    tags: notest
+

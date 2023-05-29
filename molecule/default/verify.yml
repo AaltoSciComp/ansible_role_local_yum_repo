@@ -1,0 +1,59 @@
+---
+# This is an example playbook to execute Ansible tests.
+
+# https://www.sysbee.net/blog/testing-ansible-playbooks-with-molecule/
+# https://docs.ansible.com/ansible/latest/reference_appendices/test_strategies.html
+
+- name: Verify
+  hosts: all
+  gather_facts: false
+  tasks:
+
+#  - name: Example assertion
+#    ansible.builtin.assert:
+#      that: true
+
+
+
+#- name: Check if port 80 is open:
+#  - ansible.builtin.wait_for:
+#      host: "{{ inventory_hostname }}"
+#      port: 8080
+#   delegate_to: localhost
+
+
+  - name: Fetch the example web page
+    ansible.builtin.uri:
+      url: http://localhost:8080/index.html
+      return_content: yes
+    register: jsondata
+    delegate_to: localhost
+
+#  - name: print web page contents
+#    ansible.builtin.debug:
+#      msg: "index.html: {{ jsondata['content'] }}"
+
+  - name: check the web page contents
+    ansible.builtin.assert:
+      that: "'Triton Internal Web-server' in jsondata['content']"
+      fail_msg: "Wrong index.html: {{ jsondata['content'] }}"
+      success_msg: "index.html ok"
+
+
+  - name: Add  dnf repository
+    ansible.builtin.yum_repository:
+      name: "ex-repo"
+      description: "Example repo"
+      baseurl: "http://localhost/yum_repo/"
+      gpgcheck: no
+
+  - name: List  dnf repository files
+    ansible.builtin.command: 'dnf --disablerepo="*" --enablerepo="ex-repo" --refresh list available '
+    register: packagelist
+
+  - name: print stdout
+    ansible.builtin.debug:
+      msg: "{{ packagelist.stdout }}"
+  - name: print stderr
+    ansible.builtin.debug:
+      msg: "{{ packagelist.stderr }}"

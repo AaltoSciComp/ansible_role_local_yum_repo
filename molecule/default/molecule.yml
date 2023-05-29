@@ -1,0 +1,17 @@
+---
+dependency:
+  name: galaxy
+driver:
+  name: podman
+platforms:
+  - name: instance-rocky
+    #image: docker.io/rockylinux/rockylinux:9.2
+    image: docker.io/rockylinux/rockylinux:9-ubi-init
+    pre_build_image: true
+    command: "/usr/sbin/init"
+    published_ports:
+    - 127.0.0.1:8080:80
+provisioner:
+  name: ansible
+verifier:
+  name: ansible

@@ -1,0 +1,5 @@
+---
+# defaults file for ansible_role_local_yum_repo
+
+
+local_yum_repo_folder: /var/www/html/yum_repo

@@ -47,13 +47,21 @@
       baseurl: "http://localhost/yum_repo/"
       gpgcheck: no
 
+
+
   - name: List  dnf repository files
     ansible.builtin.command: 'dnf --disablerepo="*" --enablerepo="ex-repo" --refresh list available '
     register: packagelist
 
-  - name: print stdout
-    ansible.builtin.debug:
-      msg: "{{ packagelist.stdout }}"
-  - name: print stderr
-    ansible.builtin.debug:
-      msg: "{{ packagelist.stderr }}"
+#  - name: print stdout
+#    ansible.builtin.debug:
+#      msg: "{{ packagelist.stdout }}"
+#  - name: print stderr
+#    ansible.builtin.debug:
+#      msg: "{{ packagelist.stderr }}"
+
+  - name: check the repo package list for 'fake_rpm'
+    ansible.builtin.assert:
+      that: "'fake_rpm' in packagelist.stdout"
+      fail_msg: "Missing fake_rpm in package list"
+      success_msg: "fake_rpm in the list of packages"

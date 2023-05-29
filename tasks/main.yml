@@ -20,10 +20,9 @@
         group=apache
         state=directory
 
-  - name: Create a repomd (xml-based rpm metadata) repository from a set of rpms
-    ansible.builtin.command:
-        cmd: "createrepo '{{local_yum_repo_folder}}'"
-    tags: ['createrepo']
+  - name: Create/update the repomd
+    ansible.builtin.include_tasks: repomd.yml
+
 
   - name: custom index.html
     ansible.builtin.copy:

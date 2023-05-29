@@ -10,3 +10,14 @@
     - name: "Include aaltoscicomp.ansible_role_local_yum_repo"
       ansible.builtin.include_role:
         name: "aaltoscicomp.ansible_role_local_yum_repo"
+
+    - name: Add an example file to the repository
+      ansible.builtin.copy:
+        src: "fake_rpm-1.0.0-0.x86_64.rpm"
+        dest: "/var/www/html/yum_repo/fake_rpm-1.0.0-0.x86_64.rpm"
+        owner: apache
+        group: apache
+
+    - name: Create a repomd (xml-based rpm metadata) repository from a set of rpms
+      ansible.builtin.command:
+          cmd: "createrepo '/var/www/html/yum_repo'"

@@ -15,10 +15,11 @@
 
   - name: create folder for repository
     ansible.builtin.file:
-        path="{{local_yum_repo_folder}}"
+        path="{{item}}"
         owner=apache
         group=apache
         state=directory
+    loop: "{{ local_yum_repo_folders }}"
 
   - name: Create/update the repomd
     ansible.builtin.include_tasks:

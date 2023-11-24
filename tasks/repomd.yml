@@ -2,6 +2,7 @@
 
   - name: Create a repomd (xml-based rpm metadata) repository from a set of rpms
     ansible.builtin.command:
-        cmd: "createrepo '{{local_yum_repo_folder}}'"
+        cmd: "createrepo '{{ item }}'"
     tags: ['createrepo']
+    loop: "{{ local_yum_repo_folders }}"
 
